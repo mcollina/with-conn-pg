@@ -17,7 +17,7 @@ npm install with-conn-pg
 -------------------------------------------------------
 
 <a name="withConn"></a>
-### withConnPg(connectionString, func(conn, args.., done) or [func1, func2])
+### withConnPg(connectionString, func(conn, args.., done))
 
 Wraps the passed function so that the first argument is what is
 returned by
