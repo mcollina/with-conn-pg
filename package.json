@@ -1,0 +1,40 @@
+{
+  "name": "with-conn-pg",
+  "version": "0.0.1",
+  "description": "Calls a function injecting a pg connection, and release it afterwards",
+  "main": "with-conn.js",
+  "scripts": {
+    "lint": "standard",
+    "test": "tape test.js | faucet"
+  },
+  "precommit": [
+    "lint",
+    "test"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mcollina/with-conn-pg.git"
+  },
+  "keywords": [
+    "postgres",
+    "connection",
+    "sql",
+    "with"
+  ],
+  "author": "Matteo Collina <hello@matteocollina.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mcollina/with-conn-pg/issues"
+  },
+  "homepage": "https://github.com/mcollina/with-conn-pg#readme",
+  "dependencies": {
+    "fastfall": "^1.2.3",
+    "pg": "^4.4.0"
+  },
+  "devDependencies": {
+    "faucet": "0.0.1",
+    "pre-commit": "^1.0.10",
+    "standard": "^4.4.1",
+    "tape": "^4.0.0"
+  }
+}
