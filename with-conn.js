@@ -47,7 +47,9 @@ function withConn (connString, func) {
   }
 
   function release () {
-    this.done()
+    if (this.done) {
+      this.done()
+    }
     this.callback.apply(null, arguments)
   }
 }
