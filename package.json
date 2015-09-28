@@ -1,6 +1,6 @@
 {
   "name": "with-conn-pg",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Calls a function injecting a pg connection, and release it afterwards",
   "main": "with-conn.js",
   "scripts": {
