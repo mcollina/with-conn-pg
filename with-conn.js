@@ -10,6 +10,7 @@ function withConn (connString, func) {
     var holder = new Holder()
     holder.callback = arguments[arguments.length - 1]
     holder.caller = this
+    holder.args = new Array(arguments.length - 1)
 
     for (var i = 0; i < arguments.length - 1; i++) {
       holder.args[i] = arguments[i]
@@ -27,9 +28,8 @@ function withConn (connString, func) {
     ], release)
   }
 
-  // TODO reuse in a linked list
   function Holder () {
-    this.args = []
+    this.args = null
     this.func = null
     this.conn = null
     this.caller = null
