@@ -29,7 +29,8 @@
   "homepage": "https://github.com/mcollina/with-conn-pg#readme",
   "dependencies": {
     "fastfall": "^1.5.1",
-    "pg": "^6.1.0"
+    "pg": "^6.1.0",
+    "pg-connection-string": "^0.1.3"
   },
   "devDependencies": {
     "faucet": "0.0.1",

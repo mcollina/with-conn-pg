@@ -2,57 +2,69 @@
 
 var pg = require('pg')
 var fastfall = require('fastfall')
+var parseConnString = require('pg-connection-string').parse
 
-function withConn (connString, func) {
-  var fall = fastfall()
+function factory (config) {
+  if (typeof config === 'string') {
+    config = parseConnString(config)
+  }
 
-  return function callFunc () {
-    var holder = new Holder()
-    holder.callback = arguments[arguments.length - 1]
-    holder.caller = this
-    holder.args = new Array(arguments.length - 1)
+  var pool = new pg.Pool(config)
 
-    for (var i = 0; i < arguments.length - 1; i++) {
-      holder.args[i] = arguments[i]
+  withConn.end = pool.end.bind(pool)
+
+  return withConn
+
+  function withConn (func) {
+    var fall = fastfall()
+
+    return function callFunc () {
+      var holder = new Holder()
+      holder.callback = arguments[arguments.length - 1]
+      holder.caller = this
+      holder.args = new Array(arguments.length - 1)
+
+      for (var i = 0; i < arguments.length - 1; i++) {
+        holder.args[i] = arguments[i]
+      }
+
+      if (Array.isArray(func)) {
+        holder.func = fastfall(func)
+      } else {
+        holder.func = func
+      }
+
+      fall(holder, [
+        getConn,
+        execute
+      ], release)
     }
 
-    if (Array.isArray(func)) {
-      holder.func = fastfall(func)
-    } else {
-      holder.func = func
+    function Holder () {
+      this.args = null
+      this.func = null
+      this.conn = null
+      this.caller = null
     }
 
-    fall(holder, [
-      getConn,
-      execute
-    ], release)
-  }
-
-  function Holder () {
-    this.args = null
-    this.func = null
-    this.conn = null
-    this.caller = null
-  }
-
-  function getConn (next) {
-    pg.connect(connString, next)
-  }
-
-  function execute (conn, done, next) {
-    this.done = done
-    this.args.push(next)
-    this.args.unshift(conn)
-    this.func.apply(this.caller, this.args)
-  }
-
-  function release () {
-    if (this.done) {
-      this.done()
+    function getConn (next) {
+      pool.connect(next)
     }
-    this.callback.apply(null, arguments)
+
+    function execute (conn, done, next) {
+      this.done = done
+      this.args.push(next)
+      this.args.unshift(conn)
+      this.func.apply(this.caller, this.args)
+    }
+
+    function release () {
+      if (this.done) {
+        this.done()
+      }
+      this.callback.apply(null, arguments)
+    }
   }
 }
 
-module.exports = withConn
-module.exports.end = pg.end.bind(pg)
+module.exports = factory
