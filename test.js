@@ -1,12 +1,14 @@
 'use strict'
 
 var test = require('tape')
-var withConn = require('./')
+var parseConnString = require('pg-connection-string').parse
+var factory = require('./')
 
 var connString = 'postgres://localhost/with_conn'
 
 test('gets a connection', function (t) {
-  var func = withConn(connString, function (client, done) {
+  var withConn = factory(connString)
+  var func = withConn(function (client, done) {
     client.query('SELECT $1::int AS number', ['1'], function (err, result) {
       t.error(err, 'no error')
       t.equal(result.rows[0].number, 1, 'output matches')
@@ -20,7 +22,8 @@ test('gets a connection', function (t) {
 })
 
 test('accepts a parameter', function (t) {
-  var func = withConn(connString, function (client, arg, done) {
+  var withConn = factory(connString)
+  var func = withConn(function (client, arg, done) {
     t.equal(arg, 42, 'parameter matches')
     client.query('SELECT $1::int AS number', ['1'], function (err, result) {
       t.error(err, 'no error')
@@ -35,7 +38,8 @@ test('accepts a parameter', function (t) {
 })
 
 test('builds a waterfall', function (t) {
-  var func = withConn(connString, [
+  var withConn = factory(connString)
+  var func = withConn([
     function (client, arg, done) {
       t.equal(arg, 42, 'parameter matches')
       client.query('SELECT $1::int AS number', ['1'], function (err, result) {
@@ -57,4 +61,21 @@ test('builds a waterfall', function (t) {
     withConn.end()
     t.end()
   })
+})
+
+test('accepts a parameter', function (t) {
+  var config = parseConnString(connString)
+  var withConn = factory(config)
+  var func = withConn(function (client, arg, done) {
+    t.equal(arg, 42, 'parameter matches')
+    client.query('SELECT $1::int AS number', ['1'], function (err, result) {
+      t.error(err, 'no error')
+      t.equal(result.rows[0].number, 1, 'output matches')
+      done()
+      // clears the pg pool
+      withConn.end()
+    })
+  })
+
+  func(42, t.end.bind(t))
 })

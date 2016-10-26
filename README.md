@@ -11,13 +11,19 @@ npm install with-conn-pg
 <a name="api"></a>
 ## API
 
-  * <a href="#withConn"><code><b>withConnPg()</b></code></a>
-  * <a href="#end"><code>withConnPg.<b>end()</b></code></a>
+  * <a href="#factory"><code><b>withConnPg()</b></code></a>
+  * <a href="#withConn"><code><b>withConn()</b></code></a>
+  * <a href="#end"><code>withConn.<b>end()</b></code></a>
+
+-------------------------------------------------------
+
+<a name="factory"></a>
+### withConnPg(config)
 
 -------------------------------------------------------
 
 <a name="withConn"></a>
-### withConnPg(connectionString, func(conn, args.., done))
+### withConn(func(conn, args.., done))
 
 Wraps the passed function so that the first argument is what is
 returned by
@@ -48,7 +54,7 @@ func(42, function (err, result) {
 -------------------------------------------------------
 
 <a name="end"></a>
-### withConnPg.end()
+### withConn.end()
 
 Wraps [`pg.end()`](https://www.npmjs.com/package/pg) to release the
 connection pool (useful during testing).
